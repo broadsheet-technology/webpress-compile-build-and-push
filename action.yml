@@ -17,7 +17,6 @@ inputs:
     default: true
 
 runs:
-  using: "docker"
   steps:
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
