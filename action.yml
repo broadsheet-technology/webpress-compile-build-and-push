@@ -31,6 +31,7 @@ runs:
         node-version: "14.x"
         cache: "npm"
     - run: npm install
+      shell: bash
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
