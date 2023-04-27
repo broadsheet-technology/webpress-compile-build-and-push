@@ -31,10 +31,8 @@ runs:
       uses: docker/setup-buildx-action@v2
 
     - name: Copy Dockerfile to main repository
-      uses: actions/io@v2
-      with:
-        src: ${{ steps.action-dir.outputs.dir }}/Dockerfile
-        dest: ${{ github.workspace }}
+      shell: bash
+      run: cp ${{ steps.action-dir.outputs.dir }}/Dockerfile ${{ github.workspace }}
 
     - name: Install npm dependencies
       uses: actions/setup-node@v3
