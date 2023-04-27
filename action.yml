@@ -32,7 +32,6 @@ runs:
 
     - name: Copy Dockerfile to main repository
       uses: actions/io@v2
-      shell: bash
       with:
         src: ${{ steps.action-dir.outputs.dir }}/Dockerfile
         dest: ${{ github.workspace }}
@@ -42,6 +41,7 @@ runs:
       with:
         node-version: "14.x"
         cache: "npm"
+
     - run: npm install
       shell: bash
 
