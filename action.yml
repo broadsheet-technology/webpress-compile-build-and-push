@@ -73,5 +73,5 @@ runs:
         context: .
         file: Dockerfile
         push: ${{ inputs.push }}
-        tags: ${{ inputs.tags }}
-        labels: ${{ inputs.labels }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
