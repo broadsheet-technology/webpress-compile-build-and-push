@@ -27,31 +27,6 @@ runs:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
-    - name: Set up Docker buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Write Dockerfile file
-      uses: DamianReeves/write-file-action@master
-      with:
-        path: Dockerfile
-        write-mode: overwrite
-        contents: |
-          FROM ghcr.io/broadsheet-technology/webpress-compile:latest as compiled-theme
-          WORKDIR /app
-          COPY . .
-
-          RUN /app/compile.sh
-
-          FROM ghcr.io/broadsheet-technology/wordpress:0.5
-
-          COPY --from=compiled-theme /app/dist/wp-content/themes/. /srv/themes/.
-          RUN chown -R www-data:www-data /srv/themes
-          RUN chmod -R 755 /srv/themes
-
-          COPY --from=compiled-theme /app/dist/stencil-stats.json /srv/stencil-stats.json
-          RUN chown -R www-data:www-data /srv/stencil-stats.json
-          RUN chmod -R 755 /srv/stencil-stats.json
-
     - name: Install npm dependencies
       uses: actions/setup-node@v3
       with:
@@ -61,8 +36,30 @@ runs:
     - run: npm install
       shell: bash
 
+    - run: npm run build
+      shell: bash
+
+    - name: Set up Docker buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Write Dockerfile file
+      uses: DamianReeves/write-file-action@master
+      with:
+        path: Dockerfile
+        write-mode: overwrite
+        contents: |
+          FROM ghcr.io/broadsheet-technology/wordpress:0.5
+
+          COPY ./bin/wp-content/themes/. /srv/themes/.
+          RUN chown -R www-data:www-data /srv/themes
+          RUN chmod -R 755 /srv/themes
+
+          COPY ./bin/stencil-stats.json /srv/stencil-stats.json
+          RUN chown -R www-data:www-data /srv/stencil-stats.json
+          RUN chmod -R 755 /srv/stencil-stats.json
+
     - name: Build and push Docker image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v4
       with:
         context: .
         file: Dockerfile
