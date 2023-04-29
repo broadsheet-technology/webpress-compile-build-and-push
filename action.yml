@@ -32,12 +32,14 @@ runs:
 
     - name: Upload Dockerfile template as artifact
       uses: actions/upload-artifact@v2
+      shell: bash
       with:
         name: Dockerfile.template
         path: Dockerfile.template
 
     - name: Download Dockerfile template artifact
       uses: actions/download-artifact@v2
+      shell: bash
       with:
         name: Dockerfile.template
         path: .
