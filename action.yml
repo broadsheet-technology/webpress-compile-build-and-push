@@ -19,14 +19,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Get path to action directory
-      id: action-dir
-      shell: bash
-      run: echo "::set-output name=dir::$(pwd)"
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-
     - name: Install npm dependencies
       uses: actions/setup-node@v3
       with:
@@ -38,6 +30,23 @@ runs:
 
     - run: npm run build
       shell: bash
+
+    - name: Extract version
+      run: |
+        VERSION=$(jq -r '.version' ./package.json)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ghcr.io/wjhdev/support-the-herald
+        tags: |
+          latest
+          ${{ env.VERSION }}
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
 
     - name: Set up Docker buildx
       uses: docker/setup-buildx-action@v2
