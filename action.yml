@@ -34,7 +34,7 @@ runs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: theme
+        name: wp-theme
         path: ./bin/wp-content/themes/support.badgerherald.org
 
     - name: Extract version
@@ -49,8 +49,10 @@ runs:
       with:
         images: ghcr.io/wjhdev/support-the-herald
         tags: |
-          latest
-          ${{ env.VERSION }}
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{env.VERSION}}
+          type=semver,pattern={{major}}.{{minor}}.{{patch}}
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
