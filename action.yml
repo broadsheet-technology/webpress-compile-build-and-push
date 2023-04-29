@@ -37,6 +37,12 @@ runs:
         name: wp-theme
         path: ./bin/wp-content/themes/support.badgerherald.org
 
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: stencil-stats.json
+        path: ./bin/stencil-stats.json
+
     - name: Extract version
       shell: bash
       run: |
