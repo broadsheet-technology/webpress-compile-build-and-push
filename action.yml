@@ -31,7 +31,14 @@ runs:
     - run: npm run build
       shell: bash
 
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: theme
+        path: ./bin/wp-content/themes/support.badgerherald.org
+
     - name: Extract version
+      shell: bash
       run: |
         VERSION=$(jq -r '.version' ./package.json)
         echo "VERSION=$VERSION" >> $GITHUB_ENV
