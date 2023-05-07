@@ -5,6 +5,10 @@ inputs:
   name:
     description: "Name of docker image to push."
     required: true
+  context:
+    context: "Context to build Docker image from."
+    required: false
+    default: .
   push:
     description: "Whether to push the Docker image."
     required: false
