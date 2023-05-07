@@ -5,12 +5,9 @@ inputs:
   context:
     description: "The Docker build context."
     required: true
-  tags:
-    description: "The tags to apply to the Docker image."
-    required: false
-  labels:
-    description: "The labels to apply to the Docker image."
-    required: false
+  name:
+    description: "Name of docker image to push."
+    required: true
   push:
     description: "Whether to push the Docker image."
     required: false
@@ -19,6 +16,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Install npm dependencies
       uses: actions/setup-node@v3
       with:
@@ -43,23 +43,6 @@ runs:
         name: stencil-stats.json
         path: ./bin/stencil-stats.json
 
-    - name: Extract version
-      shell: bash
-      run: |
-        VERSION=$(jq -r '.version' ./package.json)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: ghcr.io/wjhdev/support-the-herald
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{env.VERSION}}
-          type=semver,pattern={{major}}.{{minor}}.{{patch}}
-
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
@@ -81,6 +64,11 @@ runs:
           COPY ./bin/stencil-stats.json /srv/stencil-stats.json
           RUN chown -R www-data:www-data /srv/stencil-stats.json
           RUN chmod -R 755 /srv/stencil-stats.json
+
+    - name: Gather Docker meta
+    - users: broadsheet.technology/action-extract-webpress-context@test
+      with:
+        name: ${{ inputs.name }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
