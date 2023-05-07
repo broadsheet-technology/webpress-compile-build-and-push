@@ -47,9 +47,6 @@ runs:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
-    - name: Set up Docker buildx
-      uses: docker/setup-buildx-action@v2
-
     - name: Write Dockerfile file
       uses: DamianReeves/write-file-action@master
       with:
@@ -65,6 +62,9 @@ runs:
           COPY ./bin/stencil-stats.json /srv/stencil-stats.json
           RUN chown -R www-data:www-data /srv/stencil-stats.json
           RUN chmod -R 755 /srv/stencil-stats.json
+
+    - name: Set up Docker buildx
+      uses: docker/setup-buildx-action@v2
 
     - name: Gather Docker meta
       id: meta
