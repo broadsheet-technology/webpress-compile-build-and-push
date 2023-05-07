@@ -2,9 +2,6 @@ name: webpress-compile
 description: Build and push a Docker container for webpress-compile
 
 inputs:
-  context:
-    description: "The Docker build context."
-    required: true
   name:
     description: "Name of docker image to push."
     required: true
