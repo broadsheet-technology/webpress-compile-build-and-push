@@ -63,7 +63,7 @@ runs:
           RUN chmod -R 755 /srv/stencil-stats.json
 
     - name: Gather Docker meta
-    - uses: broadsheet-technology/action-extract-webpress-context@test
+      uses: broadsheet-technology/action-extract-webpress-context@test
       with:
         name: ${{ inputs.name }}
 
