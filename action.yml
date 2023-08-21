@@ -1,0 +1,82 @@
+name: webpress-compile
+description: Build and push a Docker container for webpress-compile
+
+inputs:
+  name:
+    description: "Name of docker image to push."
+    required: true
+  context:
+    context: "Context to build Docker image from."
+    required: false
+    default: .
+  push:
+    description: "Whether to push the Docker image."
+    required: false
+    default: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install npm dependencies
+      uses: actions/setup-node@v3
+      with:
+        node-version: "14.x"
+        cache: "npm"
+
+    - run: npm install
+      shell: bash
+
+    - run: npm run build
+      shell: bash
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: wp-theme
+        path: ./bin/wp-content/themes/support.badgerherald.org
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: stencil-stats.json
+        path: ./bin/stencil-stats.json
+
+    - name: Write Dockerfile file
+      uses: DamianReeves/write-file-action@master
+      with:
+        path: Dockerfile
+        write-mode: overwrite
+        contents: |
+          FROM ghcr.io/broadsheet-technology/wordpress:0.5
+
+          COPY ./bin/wp-content/themes/. /srv/themes/.
+          RUN chown -R www-data:www-data /srv/themes
+          RUN chmod -R 755 /srv/themes
+
+          COPY ./bin/stencil-stats.json /srv/stencil-stats.json
+          RUN chown -R www-data:www-data /srv/stencil-stats.json
+          RUN chmod -R 755 /srv/stencil-stats.json
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Gather Docker meta
+      id: meta
+      uses: broadsheet-technology/action-extract-webpress-context@test
+      with:
+        name: ${{ inputs.name }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: Dockerfile
+        push: ${{ inputs.push }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
