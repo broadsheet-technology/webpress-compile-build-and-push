@@ -2,6 +2,9 @@ name: webpress-compile
 description: Build and push a Docker container for webpress-compile
 
 inputs:
+  theme:
+    description: "Name of theme (folder name) Stencil produces."
+    required: true
   name:
     description: "Name of docker image to push."
     required: true
@@ -36,7 +39,7 @@ runs:
       uses: actions/upload-artifact@v2
       with:
         name: wp-theme
-        path: ./bin/wp-content/themes/support.badgerherald.org
+        path: ./bin/wp-content/themes/${{ inputs.theme }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
